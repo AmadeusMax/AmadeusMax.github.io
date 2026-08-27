@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BMW APPS // GitHub Ecosystem & Telemetry Hub</title>
+  
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts: Orbitron & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Orbitron:wght@500;700;900&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            mono: ['"JetBrains Mono"', 'monospace'],
+            orbitron: ['"Orbitron"', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+          },
+          colors: {
+            bmw: {
+              blue: '#0066B1',
+              darkblue: '#00204E',
+              red: '#E7222E',
+              cyan: '#00f0ff',
+              lightcyan: '#7000FF',
+              carbon: '#090b10',
+              card: '#0f131d',
+              border: '#1f293d',
+              terminal: '#05070a'
+            }
+          },
+          boxShadow: {
+            'glow-cyan': '0 0 25px -5px rgba(0, 240, 255, 0.35)',
+            'glow-blue': '0 0 25px -5px rgba(0, 102, 177, 0.4)',
+            'glow-red': '0 0 25px -5px rgba(231, 34, 46, 0.35)',
+          },
+          animation: {
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+            'scanline': 'scanline 8s linear infinite',
+          },
+          keyframes: {
+            scanline: {
+              '0%': { transform: 'translateY(-100%)' },
+              '100%': { transform: 'translateY(1000%)' },
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Custom Tech Grid Pattern */
+    .tech-bg {
+      background-color: #080a0f;
+      background-image: 
+        radial-gradient(circle at 50% 0%, rgba(0, 102, 177, 0.18) 0%, transparent 60%),
+        radial-gradient(circle at 100% 100%, rgba(231, 34, 46, 0.1) 0%, transparent 45%),
+        linear-gradient(rgba(15, 23, 42, 0.35) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(15, 23, 42, 0.35) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 32px 32px, 32px 32px;
+    }
+
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #090b10;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #1f293d;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #0066B1;
+    }
+
+    /* Corner HUD brackets */
+    .hud-box {
+      position: relative;
+    }
+    .hud-box::before, .hud-box::after {
+      content: '';
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      pointer-events: none;
+      border-color: #00f0ff;
+    }
+    .hud-box::before {
+      top: 0;
+      left: 0;
+      border-top: 2px solid;
+      border-left: 2px solid;
+    }
+    .hud-box::after {
+      bottom: 0;
+      right: 0;
+      border-bottom: 2px solid;
+      border-right: 2px solid;
+    }
+  </style>
+</head>
+<body class="tech-bg text-slate-200 font-sans min-h-screen selection:bg-bmw-cyan selection:text-black flex flex-col justify-between overflow-x-hidden">
+
+  <!-- Toast Notification Overlay -->
+  <div id="toast" class="fixed bottom-6 right-6 z-50 transform translate-y-24 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-3 bg-bmw-card border border-bmw-cyan text-white px-5 py-3 rounded-lg shadow-glow-cyan">
+    <i data-lucide="check-circle" class="text-bmw-cyan w-5 h-5"></i>
+    <span id="toast-text" class="text-xs font-mono font-semibold tracking-wider uppercase">Copied to clipboard</span>
+  </div>
+
+  <!-- Top Navigation Header -->
+  <header class="border-b border-bmw-border/80 backdrop-blur-md sticky top-0 z-40 bg-bmw-carbon/85">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 py-3 flex items-center justify-between">
+      
+      <!-- Brand Logo / Badge -->
+      <div class="flex items-center gap-3 group cursor-pointer">
+        <div class="relative flex items-center justify-center w-11 h-11 rounded-lg bg-gradient-to-br from-slate-900 to-black border border-slate-700 group-hover:border-bmw-cyan transition-all shadow-inner">
+          <!-- BMW M Tri-color Stripe on edge -->
+          <div class="absolute -top-0.5 left-2 right-2 h-[2px] flex rounded-full overflow-hidden">
+            <span class="w-1/3 bg-[#0066B1]"></span>
+            <span class="w-1/3 bg-[#00204E]"></span>
+            <span class="w-1/3 bg-[#E7222E]"></span>
+          </div>
+          <!-- Hexagon Icon -->
+          <i data-lucide="cpu" class="w-5 h-5 text-bmw-cyan group-hover:rotate-12 transition-transform duration-300"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-orbitron font-bold tracking-widest text-lg text-white">BMW<span class="text-bmw-cyan">APPS</span></span>
+            <span class="text-[9px] font-mono px-1.5 py-0.5 rounded bg-bmw-blue/20 border border-bmw-blue/40 text-sky-300 font-bold uppercase tracking-wider">DEV // V4.1</span>
+          </div>
+          <p class="text-[11px] font-mono text-slate-400 tracking-tighter">OPEN SOURCE CAN-BUS & IDRIVE ECOSYSTEM</p>
+        </div>
+      </div>
+
+      <!-- Quick Nav Links & Stats -->
+      <div class="hidden md:flex items-center gap-6">
+        <div class="flex items-center gap-2 bg-slate-900/80 px-3 py-1.5 rounded-full border border-slate-800 text-xs font-mono">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span class="text-slate-400">TELEMETRY LINK:</span>
+          <span class="text-emerald-400 font-bold">ONLINE</span>
+        </div>
+
+        <a href="#projects-section" class="text-xs font-mono tracking-wider text-slate-300 hover:text-bmw-cyan transition-colors flex items-center gap-1.5">
+          <i data-lucide="layers" class="w-4 h-4"></i> PROJECT
+        </a>
+        <a href="#terminal-section" class="text-xs font-mono tracking-wider text-slate-300 hover:text-bmw-cyan transition-colors flex items-center gap-1.5">
+          <i data-lucide="terminal" class="w-4 h-4"></i> DIAGNOSTICS
+        </a>
+        
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2 px-4 py-1.5 bg-gradient-to-r from-bmw-blue to-blue-700 hover:from-blue-600 hover:to-sky-500 text-white font-mono text-xs font-semibold rounded-md border border-blue-400/40 shadow-glow-blue transition-all">
+          <i data-lucide="github" class="w-4 h-4"></i>
+          <span>GITHUB REPO</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
+    
+    <!-- Hero / HUD Telemetry Banner -->
+    <section class="relative mb-14 rounded-2xl bg-gradient-to-b from-bmw-card to-bmw-carbon border border-bmw-border p-6 sm:p-10 overflow-hidden shadow-2xl">
+      <!-- Ambient Glow Behind Hero -->
+      <div class="absolute -top-32 -left-32 w-80 h-80 bg-bmw-blue/20 rounded-full blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-32 -right-32 w-80 h-80 bg-bmw-red/15 rounded-full blur-3xl pointer-events-none"></div>
+
+      <!-- Top decorative M-Power bar -->
+      <div class="absolute top-0 left-0 right-0 h-1 flex">
+        <div class="w-1/3 bg-[#0066B1]"></div>
+        <div class="w-1/3 bg-[#00204E]"></div>
+        <div class="w-1/3 bg-[#E7222E]"></div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center relative z-10">
+        <!-- Left Hero Copy -->
+        <div class="lg:col-span-7 space-y-5">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded bg-slate-800/80 border border-slate-700 text-bmw-cyan text-xs font-mono">
+            <i data-lucide="activity" class="w-3.5 h-3.5 animate-spin"></i>
+            <span>BMWAPPS HIGH EFFICIENT LOW RESOURCE APPS</span>
+          </div>
+
+          <h1 class="text-3xl sm:text-5xl font-orbitron font-extrabold tracking-tight text-white leading-tight">
+            ENGINEERED FOR <br/>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-bmw-cyan via-sky-300 to-blue-500">
+              ULTIMATE EFFICIENCY
+            </span>
+          </h1>
+
+          <p class="text-slate-400 text-sm sm:text-base leading-relaxed max-w-xl">
+            Made by a tech specializing in VOIP, AI, and Database technologies. To allow use with low resource apps for complicated tasks
+          </p>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-wrap gap-4 pt-2">
+            <a href="#projects-section" class="px-6 py-3 bg-bmw-cyan hover:bg-cyan-400 text-slate-950 font-orbitron font-bold text-xs uppercase tracking-wider rounded-lg flex items-center gap-2 transition-all shadow-glow-cyan">
+              <i data-lucide="folder-git-2" class="w-4 h-4"></i> View Core Project
+            </a>
+            
+            <button onclick="copyToClipboard('git clone https://github.com/bmwapps', 'Repository Clone URL Copied!')" class="px-5 py-3 bg-slate-900/90 hover:bg-slate-800 text-slate-200 font-mono text-xs rounded-lg border border-slate-700 flex items-center gap-2 hover:border-slate-500 transition-all">
+              <i data-lucide="terminal" class="w-4 h-4 text-bmw-cyan"></i>
+              <span>git clone bmwapps</span>
+              <i data-lucide="copy" class="w-3.5 h-3.5 text-slate-400 ml-1"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Right Quick Tech HUD Widget -->
+        <div class="lg:col-span-5">
+          <div class="hud-box bg-slate-950/80 border border-slate-800 rounded-xl p-5 backdrop-blur-md shadow-inner space-y-4">
+            
+            <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
+              <span class="text-xs font-mono text-slate-400 flex items-center gap-2">
+                <i data-lucide="gauge" class="w-4 h-4 text-bmw-cyan"></i> BUS PROTOCOL TELEMETRY
+              </span>
+              <span class="text-[10px] font-mono text-emerald-400 bg-emerald-950/50 border border-emerald-800/60 px-2 py-0.5 rounded">
+                D-CAN / ENET STABLE
+              </span>
+            </div>
+
+            <!-- Mini Telemetry Gauges / Counters -->
+            <div class="grid grid-cols-3 gap-3 text-center font-mono">
+              <div class="bg-slate-900/70 p-3 rounded-lg border border-slate-800">
+                <div class="text-xs text-slate-400">PROJECT</div>
+                <div class="text-xl font-bold font-orbitron text-bmw-cyan mt-1">01</div>
+                <div class="text-[9px] text-sky-400">CORE SUITE</div>
+              </div>
+              <div class="bg-slate-900/70 p-3 rounded-lg border border-slate-800">
+                <div class="text-xs text-slate-400">BAUD RATE</div>
+                <div class="text-xl font-bold font-orbitron text-white mt-1">500k</div>
+                <div class="text-[9px] text-cyan-400">KBPS CAN 2.0B</div>
+              </div>
+              <div class="bg-slate-900/70 p-3 rounded-lg border border-slate-800">
+                <div class="text-xs text-slate-400">PLATFORMS</div>
+                <div class="text-xl font-bold font-orbitron text-emerald-400 mt-1">E/F/G</div>
+                <div class="text-[9px] text-slate-400">SERIES SUPP.</div>
+              </div>
+            </div>
+
+            <!-- Diagnostics Ticker -->
+            <div class="bg-black/60 p-3 rounded font-mono text-[11px] text-slate-300 space-y-1.5 border border-slate-900">
+              <div class="flex justify-between text-[10px] text-slate-500">
+                <span>ECU_ADDR: 0x12 (DME)</span>
+                <span>STATUS: 0x00 OK</span>
+              </div>
+              <div class="flex items-center gap-2 text-xs">
+                <span class="text-bmw-cyan">⚡ PID 0x0C:</span>
+                <span class="text-white font-bold tracking-wide">6,850 RPM</span>
+                <span class="text-slate-500 ml-auto text-[10px]">OIL: 92°C</span>
+              </div>
+              <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                <div class="bg-gradient-to-r from-blue-500 via-bmw-cyan to-bmw-red h-full w-[78%] animate-pulse"></div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Project Controls: Header -->
+    <div id="projects-section" class="mb-8">
+      <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-bmw-border pb-6">
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="w-2.5 h-2.5 bg-bmw-cyan rounded-full animate-ping"></span>
+            <h2 class="text-2xl font-orbitron font-bold text-white tracking-wider">CURRENT PROJECT</h2>
+          </div>
+          <p class="text-xs font-mono text-slate-400 mt-1">
+            OPEN-SOURCE BMW CORE TELEMETRY, CAN-BUS &amp; DIAGNOSTICS ENGINE
+          </p>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-mono px-3 py-1 rounded bg-slate-900 text-bmw-cyan border border-slate-800 flex items-center gap-1.5">
+            <i data-lucide="check" class="w-3.5 h-3.5"></i> LOW-RESOURCE OPTIMIZED
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Single Project Card Panel -->
+    <div id="projects-grid" class="max-w-4xl mx-auto mb-16">
+      
+      <!-- Flagship Single Project Card -->
+      <div class="hud-box bg-bmw-card/95 border border-bmw-border hover:border-bmw-cyan/80 rounded-2xl p-6 sm:p-8 transition-all duration-300 shadow-2xl hover:shadow-glow-cyan flex flex-col justify-between group">
+        <div>
+          <div class="flex flex-wrap items-start justify-between gap-4 mb-6">
+            <div class="flex items-center gap-4">
+              <div class="p-3.5 rounded-xl bg-slate-900 border border-slate-800 text-bmw-cyan group-hover:text-white group-hover:bg-bmw-blue transition-all shadow-inner">
+                <i data-lucide="radio" class="w-8 h-8"></i>
+              </div>
+              <div>
+                <span class="text-[11px] font-mono text-bmw-cyan tracking-wider uppercase">FLAGSHIP CORE PLATFORM</span>
+                <h3 class="text-2xl sm:text-3xl font-orbitron font-bold text-white group-hover:text-bmw-cyan transition-colors">
+                  BMWAUTHOR
+                </h3>
+              </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-mono px-2.5 py-1 rounded bg-emerald-950/80 border border-emerald-600 text-emerald-400 font-semibold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                v2.8.4 • ACTIVE
+              </span>
+            </div>
+          </div>
+
+          <p class="text-sm sm:text-base text-slate-300 font-sans leading-relaxed">
+            A multifunction Theater/Screen/Tv Script editor for writing scripts. Has the ability for Character/Sceme/Act creation.
+          </p>
+        </div>
+
+        <div class="pt-6 mt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-6 text-xs font-mono text-slate-400">
+            <span class="flex items-center gap-1.5"><i data-lucide="star" class="w-4 h-4 text-amber-400"></i> 1,420 Stars</span>
+            <span class="flex items-center gap-1.5"><i data-lucide="git-fork" class="w-4 h-4 text-slate-400"></i> 260 Forks</span>
+            <span class="flex items-center gap-1.5"><i data-lucide="git-pull-request" class="w-4 h-4 text-emerald-400"></i> Open PRs</span>
+          </div>
+
+          <div class="flex items-center gap-3 w-full sm:w-auto">
+            <button onclick="copyToClipboard('git clone https://github.com/bmwapps/BMWAUTHOR.git', 'BMWAUTHOR Clone URL copied!')" class="w-full sm:w-auto text-xs font-mono text-slate-950 font-bold bg-bmw-cyan hover:bg-cyan-400 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all shadow-glow-cyan">
+              <i data-lucide="terminal" class="w-4 h-4"></i> git clone BMWAUTHOR
+            </button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Live Diagnostics & Terminal Stream Section -->
+    <section id="terminal-section" class="mb-14">
+      <div class="bg-bmw-terminal border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
+        <!-- Terminal Header Bar -->
+        <div class="bg-slate-900/90 px-4 py-3 border-b border-slate-800 flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <div class="w-3 h-3 rounded-full bg-red-500/80"></div>
+            <div class="w-3 h-3 rounded-full bg-amber-500/80"></div>
+            <div class="w-3 h-3 rounded-full bg-emerald-500/80"></div>
+            <span class="text-xs font-mono text-slate-400 ml-2">can0://bmw-gateway-diag [115200 baud]</span>
+          </div>
+          <div class="flex items-center gap-3">
+            <span class="text-[10px] font-mono text-bmw-cyan flex items-center gap-1.5">
+              <span class="w-2 h-2 rounded-full bg-bmw-cyan animate-ping"></span> LIVE FRAME FEED
+            </span>
+          </div>
+        </div>
+
+        <!-- Terminal Output Window -->
+        <div class="p-4 font-mono text-xs text-slate-300 space-y-1.5 bg-black/80 max-h-56 overflow-y-auto" id="terminal-output">
+          <p class="text-slate-500">// BMW APPS Gateway Diagnostics Initialized...</p>
+          <p class="text-emerald-400">[0.0021] CONNECTED: ZGW (Central Gateway Module) at 169.254.199.99</p>
+          <p class="text-sky-300">[0.0045] UDS SESSION: DiagnosticSessionControl [0x10 0x03] Extended Diagnostic</p>
+          <p class="text-slate-400">[0.0078] CAN RX: ID=0x01B4 DLC=8 DATA=[ 0x00 0x1A 0xFF 0x4B 0x0C 0x33 0x00 0x89 ]</p>
+          <p class="text-slate-400">[0.0102] DME_STATUS: Lambda 0.998 | Rail Pressure: 200 bar | Turbo Boost: 1.42 bar</p>
+          <p class="text-bmw-cyan">[0.0125] HUD STREAM: Injected custom M-Shift Indicator overlay successfully.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- High Tech Footer -->
+  <footer class="border-t border-bmw-border bg-bmw-carbon/95 relative z-20">
+    <!-- M Power Tricolor Accent Bar -->
+    <div class="h-1 w-full flex">
+      <div class="w-1/3 bg-[#0066B1]"></div>
+      <div class="w-1/3 bg-[#00204E]"></div>
+      <div class="w-1/3 bg-[#E7222E]"></div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div class="flex flex-col items-center justify-center text-center space-y-6">
+        
+        <!-- Brand Signature -->
+        <div class="flex items-center gap-2">
+          <i data-lucide="shield-check" class="w-5 h-5 text-bmw-cyan"></i>
+          <span class="font-orbitron font-bold tracking-widest text-white text-base">BMW<span class="text-bmw-cyan">APPS</span> REPOSITORY HUB</span>
+        </div>
+
+        <!-- Mandatory Contact & Correspondence Notice -->
+        <div class="hud-box max-w-2xl w-full bg-slate-950/90 border border-bmw-border p-5 rounded-xl shadow-lg">
+          <p class="text-xs sm:text-sm font-mono text-slate-300 tracking-wide leading-relaxed">
+            For all suggestions, comments and correspondence please contact me through 
+            <a href="mailto:bmwapps@mail2technician.com" class="text-bmw-cyan hover:text-white font-bold underline underline-offset-4 transition-colors break-all">
+              bmwapps@mail2technician.com
+            </a>
+          </p>
+
+          <div class="mt-4 flex justify-center">
+            <button onclick="copyToClipboard('bmwapps@mail2technician.com', 'Email address copied to clipboard!')" class="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 hover:bg-bmw-blue/40 border border-slate-700 hover:border-bmw-cyan text-xs font-mono text-white rounded-lg transition-all shadow-sm">
+              <i data-lucide="mail" class="w-4 h-4 text-bmw-cyan"></i>
+              <span>Copy Contact Email</span>
+              <i data-lucide="copy" class="w-3.5 h-3.5 text-slate-400"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Copyright and Disclaimer -->
+        <div class="text-[11px] font-mono text-slate-400 flex flex-col sm:flex-row items-center gap-2 sm:gap-6 pt-2">
+          <span>&copy; <span id="year"></span> BMW APPS Community Project</span>
+          <span class="hidden sm:inline">•</span>
+          <span>MIT License &amp; Open Source</span>
+          <span class="hidden sm:inline">•</span>
+          <span>Non-Affiliated with BMW AG</span>
+        </div>
+
+      </div>
+    </div>
+  </footer>
+
+  <!-- Interactive Scripts -->
+  <script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+
+    // Set current year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Copy to clipboard helper using document.execCommand for safe iframe execution
+    function copyToClipboard(text, successMessage) {
+      const tempInput = document.createElement("textarea");
+      tempInput.value = text;
+      tempInput.style.position = "fixed";
+      tempInput.style.left = "-9999px";
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      
+      try {
+        document.execCommand('copy');
+        showToast(successMessage || 'Copied to clipboard!');
+      } catch (err) {
+        console.error('Copy fallback failed: ', err);
+      }
+      
+      document.body.removeChild(tempInput);
+    }
+
+    // Toast Notification System
+    function showToast(message) {
+      const toast = document.getElementById('toast');
+      const toastText = document.getElementById('toast-text');
+      toastText.textContent = message;
+      
+      toast.classList.remove('translate-y-24', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+      
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-24', 'opacity-0');
+      }, 3000);
+    }
+
+    // Simulated Live Telemetry Log generation
+    const mockLogs = [
+      () => `[${(Math.random() * 0.9).toFixed(4)}] CAN RX: ID=0x0${Math.floor(Math.random()*900 + 100).toString(16).toUpperCase()} DLC=8 DATA=[ 0x${Math.floor(Math.random()*255).toString(16).padStart(2,'0')} 0x${Math.floor(Math.random()*255).toString(16).padStart(2,'0')} 0xFF 0x00 ]`,
+      () => `[${(Math.random() * 0.9).toFixed(4)}] DME_STATUS: Oil Temp: ${Math.floor(88 + Math.random()*10)}°C | Coolant: ${Math.floor(90 + Math.random()*5)}°C`,
+      () => `[${(Math.random() * 0.9).toFixed(4)}] WHEEL_SPEED_FL: ${(100 + Math.random()*2).toFixed(1)} km/h | RR: ${(100 + Math.random()*2).toFixed(1)} km/h`,
+      () => `[${(Math.random() * 0.9).toFixed(4)}] OBD_RESP: 0x41 0x0C (Engine Speed: ${Math.floor(2500 + Math.random()*4000)} RPM)`,
+    ];
+
+    setInterval(() => {
+      const terminal = document.getElementById('terminal-output');
+      if (terminal) {
+        const logItem = document.createElement('p');
+        logItem.className = "text-slate-400 text-[11px]";
+        const randomGenerator = mockLogs[Math.floor(Math.random() * mockLogs.length)];
+        logItem.textContent = randomGenerator();
+        terminal.appendChild(logItem);
+
+        // Keep last 15 items
+        if (terminal.children.length > 15) {
+          terminal.removeChild(terminal.children[1]);
+        }
+        terminal.scrollTop = terminal.scrollHeight;
+      }
+    }, 2800);
+  </script>
+</body>
+</html>
