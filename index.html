@@ -212,12 +212,6 @@
             <a href="#projects-section" class="px-6 py-3 bg-bmw-cyan hover:bg-cyan-400 text-slate-950 font-orbitron font-bold text-xs uppercase tracking-wider rounded-lg flex items-center gap-2 transition-all shadow-glow-cyan">
               <i data-lucide="folder-git-2" class="w-4 h-4"></i> View Core Project
             </a>
-            
-            <button onclick="copyToClipboard('git clone https://github.com/AmadeusMax/bmwauthor.git', 'Repository Clone URL Copied!')" class="px-5 py-3 bg-slate-900/90 hover:bg-slate-800 text-slate-200 font-mono text-xs rounded-lg border border-slate-700 flex items-center gap-2 hover:border-slate-500 transition-all">
-              <i data-lucide="terminal" class="w-4 h-4 text-bmw-cyan"></i>
-              <span>git clone bmwauthor</span>
-              <i data-lucide="copy" class="w-3.5 h-3.5 text-slate-400 ml-1"></i>
-            </button>
           </div>
         </div>
 
@@ -328,16 +322,18 @@
         </div>
 
         <div class="pt-6 mt-8 border-t border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div class="flex items-center gap-6 text-xs font-mono text-slate-400">
+          <div class="flex flex-wrap items-center gap-6 text-xs font-mono text-slate-400">
             <span class="flex items-center gap-1.5"><i data-lucide="star" class="w-4 h-4 text-amber-400"></i> 1,420 Stars</span>
             <span class="flex items-center gap-1.5"><i data-lucide="git-fork" class="w-4 h-4 text-slate-400"></i> 260 Forks</span>
             <span class="flex items-center gap-1.5"><i data-lucide="git-pull-request" class="w-4 h-4 text-emerald-400"></i> Open PRs</span>
           </div>
 
           <div class="flex items-center gap-3 w-full sm:w-auto">
-            <button onclick="copyToClipboard('git clone https://github.com/AmadeusMax/bmwauthor.git', 'BMWAUTHOR Clone URL copied!')" class="w-full sm:w-auto text-xs font-mono text-slate-950 font-bold bg-bmw-cyan hover:bg-cyan-400 flex items-center justify-center gap-2 px-4 py-2 rounded-lg transition-all shadow-glow-cyan">
-              <i data-lucide="terminal" class="w-4 h-4"></i> git clone BMWAUTHOR
-            </button>
+            <a href="https://github.com/AmadeusMax/bmwauthor" target="_blank" rel="noopener noreferrer" class="w-full sm:w-auto text-xs font-mono text-slate-950 font-bold bg-bmw-cyan hover:bg-cyan-400 flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg transition-all shadow-glow-cyan">
+              <i data-lucide="github" class="w-4 h-4"></i>
+              <span>VIEW ON GITHUB</span>
+              <i data-lucide="external-link" class="w-3.5 h-3.5 ml-0.5"></i>
+            </a>
           </div>
         </div>
       </div>
